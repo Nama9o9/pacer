@@ -1,0 +1,24 @@
+{
+  "name": "pacer",
+  "version": "1.0.0",
+  "description": "KI-Lauf-Coach als mobile App (Semesterprojekt „Anwendungen mit LLMs“, BHT).",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Nama9o9/pacer.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Nama9o9/pacer/issues"
+  },
+  "homepage": "https://github.com/Nama9o9/pacer#readme",
+  "devDependencies": {
+    "supabase": "^2.122.0"
+  }
+}
