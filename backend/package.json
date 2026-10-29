@@ -4,8 +4,8 @@
   "description": "KI-Lauf-Coach als mobile App (Semesterprojekt „Anwendungen mit LLMs“, BHT).",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "gen:types": "supabase gen types typescript --project-id frljjsipfbvoukrfqwml > ../frontend/src/types/database.types.ts"
+},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Nama9o9/pacer.git"
