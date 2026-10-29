@@ -54,3 +54,6 @@ Nach jeder Änderung am Datenbankschema in `backend/`:
 npm run gen:types
 ```
 Die Datei wird nach `frontend/src/types/database.types.ts` geschrieben.
+
+## Konventionen
+Code-, Benennungs- und Git-Konventionen stehen in [`AGENTS.md`](AGENTS.md).
