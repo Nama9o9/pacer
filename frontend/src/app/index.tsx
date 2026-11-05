@@ -1,5 +1,5 @@
 import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
+import { Platform, Pressable, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AnimatedIcon } from '@/components/animated-icon';
@@ -8,6 +8,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { WebBadge } from '@/components/web-badge';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+import { supabase } from '@/utils/supabase';
 
 function getDevMenuHint() {
   if (Platform.OS === 'web') {
@@ -56,6 +57,12 @@ export default function HomeScreen() {
         </ThemedView>
 
         {Platform.OS === 'web' && <WebBadge />}
+
+        {/* Vorläufiger Logout, zieht später in Profil/Einstellungen um.
+            Nach signOut() leitet das Root-Layout automatisch zum Login. */}
+        <Pressable onPress={() => supabase.auth.signOut()} style={styles.logoutButton}>
+          <ThemedText>Abmelden</ThemedText>
+        </Pressable>
       </SafeAreaView>
     </ThemedView>
   );
@@ -94,5 +101,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.three,
     paddingVertical: Spacing.four,
     borderRadius: Spacing.four,
+  },
+  logoutButton: {
+    paddingVertical: Spacing.two,
+    paddingHorizontal: Spacing.four,
   },
 });
