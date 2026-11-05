@@ -39,7 +39,212 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      activities: {
+        Row: {
+          activity_id: string
+          avg_heart_rate: number | null
+          created_at: string
+          distance_m: number
+          duration_s: number
+          elevation_gain_m: number | null
+          source: Database["public"]["Enums"]["activity_source"]
+          started_at: string
+          strava_id: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          activity_id?: string
+          avg_heart_rate?: number | null
+          created_at?: string
+          distance_m: number
+          duration_s: number
+          elevation_gain_m?: number | null
+          source?: Database["public"]["Enums"]["activity_source"]
+          started_at: string
+          strava_id?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          activity_id?: string
+          avg_heart_rate?: number | null
+          created_at?: string
+          distance_m?: number
+          duration_s?: number
+          elevation_gain_m?: number | null
+          source?: Database["public"]["Enums"]["activity_source"]
+          started_at?: string
+          strava_id?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activities_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      baselines: {
+        Row: {
+          available_days: number[]
+          baseline_id: string
+          created_at: string
+          km_per_week: number
+          longest_run_km: number
+          pain_level: number | null
+          pain_location: string | null
+          recent_5k_time_s: number
+          running_since_months: number
+          runs_per_week: number
+          user_id: string
+        }
+        Insert: {
+          available_days: number[]
+          baseline_id?: string
+          created_at?: string
+          km_per_week: number
+          longest_run_km: number
+          pain_level?: number | null
+          pain_location?: string | null
+          recent_5k_time_s: number
+          running_since_months: number
+          runs_per_week: number
+          user_id: string
+        }
+        Update: {
+          available_days?: number[]
+          baseline_id?: string
+          created_at?: string
+          km_per_week?: number
+          longest_run_km?: number
+          pain_level?: number | null
+          pain_location?: string | null
+          recent_5k_time_s?: number
+          running_since_months?: number
+          runs_per_week?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "baselines_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      goals: {
+        Row: {
+          created_at: string
+          distance_m: number
+          feasibility: Database["public"]["Enums"]["goal_feasibility"] | null
+          goal_id: string
+          is_active: boolean
+          race_date: string
+          target_time_s: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          distance_m: number
+          feasibility?: Database["public"]["Enums"]["goal_feasibility"] | null
+          goal_id?: string
+          is_active?: boolean
+          race_date: string
+          target_time_s: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          distance_m?: number
+          feasibility?: Database["public"]["Enums"]["goal_feasibility"] | null
+          goal_id?: string
+          is_active?: boolean
+          race_date?: string
+          target_time_s?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "goals_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          display_name: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      runner_profiles: {
+        Row: {
+          created_at: string
+          easy_pace_s_per_km: number | null
+          fitness_level: Database["public"]["Enums"]["fitness_level"]
+          interval_pace_s_per_km: number | null
+          predicted_time_s: number | null
+          tempo_pace_s_per_km: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          easy_pace_s_per_km?: number | null
+          fitness_level: Database["public"]["Enums"]["fitness_level"]
+          interval_pace_s_per_km?: number | null
+          predicted_time_s?: number | null
+          tempo_pace_s_per_km?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          easy_pace_s_per_km?: number | null
+          fitness_level?: Database["public"]["Enums"]["fitness_level"]
+          interval_pace_s_per_km?: number | null
+          predicted_time_s?: number | null
+          tempo_pace_s_per_km?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "runner_profiles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -48,7 +253,9 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      activity_source: "manual" | "strava"
+      fitness_level: "beginner" | "intermediate" | "advanced"
+      goal_feasibility: "realistic" | "ambitious" | "unrealistic"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -178,6 +385,10 @@ export const Constants = {
     Enums: {},
   },
   public: {
-    Enums: {},
+    Enums: {
+      activity_source: ["manual", "strava"],
+      fitness_level: ["beginner", "intermediate", "advanced"],
+      goal_feasibility: ["realistic", "ambitious", "unrealistic"],
+    },
   },
 } as const
