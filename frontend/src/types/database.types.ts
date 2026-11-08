@@ -250,7 +250,22 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      complete_onboarding: {
+        Args: {
+          p_available_days: number[]
+          p_distance_m: number
+          p_km_per_week: number
+          p_longest_run_km: number
+          p_pain_level?: number
+          p_pain_location?: string
+          p_race_date: string
+          p_recent_5k_time_s: number
+          p_running_since_months: number
+          p_runs_per_week: number
+          p_target_time_s: number
+        }
+        Returns: string
+      }
     }
     Enums: {
       activity_source: "manual" | "strava"
