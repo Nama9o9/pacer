@@ -58,6 +58,27 @@ export function weeksUntil(date: Date, today: Date = new Date()): number {
   return Math.floor((date.getTime() - today.getTime()) / msPerWeek);
 }
 
+/**
+ * Datum im Format TT.MM.JJJJ in ein Date umwandeln.
+ * Gibt null zurück bei falschem Format oder unmöglichem Datum (z. B. 31.02.).
+ * Uhrzeit 12:00, damit Zeitzonen das Datum nicht verschieben.
+ */
+export function parseGermanDate(text: string): Date | null {
+  const match = /^(\d{1,2})\.(\d{1,2})\.(\d{4})$/.exec(text.trim());
+  if (!match) return null;
+
+  const day = Number(match[1]);
+  const month = Number(match[2]);
+  const year = Number(match[3]);
+  const date = new Date(year, month - 1, day, 12);
+
+  // JavaScript macht aus dem 31.02. stillschweigend den 03.03., das fangen wir ab
+  if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) {
+    return null;
+  }
+  return date;
+}
+
 // ---------------------------------------------------------------------
 // Schritt 1: Ziel
 // ---------------------------------------------------------------------
