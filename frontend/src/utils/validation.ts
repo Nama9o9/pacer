@@ -27,6 +27,35 @@ export const RUNNING_SINCE_OPTIONS = [
   { label: 'über 3 Jahre', months: 48 },
 ] as const;
 
+/** Wochentage nach ISO: 1 = Montag … 7 = Sonntag */
+export const WEEKDAYS = [
+  { label: 'Mo', value: 1 },
+  { label: 'Di', value: 2 },
+  { label: 'Mi', value: 3 },
+  { label: 'Do', value: 4 },
+  { label: 'Fr', value: 5 },
+  { label: 'Sa', value: 6 },
+  { label: 'So', value: 7 },
+] as const;
+
+/**
+ * Körperstellen bei Beschwerden.
+ * value entspricht dem Enum body_location in der Datenbank.
+ */
+export const PAIN_LOCATIONS = [
+  { value: 'knee_left', label: 'Knie (links)' },
+  { value: 'knee_right', label: 'Knie (rechts)' },
+  { value: 'shin', label: 'Schienbein' },
+  { value: 'achilles', label: 'Achillessehne' },
+  { value: 'calf', label: 'Wade' },
+  { value: 'foot', label: 'Fuß' },
+  { value: 'hip', label: 'Hüfte' },
+  { value: 'back', label: 'Rücken' },
+  { value: 'other', label: 'Andere' },
+] as const;
+
+export type BodyLocation = (typeof PAIN_LOCATIONS)[number]['value'];
+
 /** Plausible Pace-Grenzen in Sekunden pro km (2:30 bis 15:00 min/km) */
 const MIN_PACE_S_PER_KM = 150;
 const MAX_PACE_S_PER_KM = 900;
@@ -188,10 +217,14 @@ export function validateAvailableDays(days: number[]): ValidationErrors {
 // Schritt 4: Beschwerden
 // ---------------------------------------------------------------------
 
+export type PainEntry = {
+  location: BodyLocation;
+  level: number | null;
+};
+
 export type PainInput = {
   hasPain: boolean;
-  location: string | null;
-  level: number | null;
+  pains: PainEntry[];
 };
 
 export function validatePain(input: PainInput): ValidationErrors {
@@ -200,16 +233,30 @@ export function validatePain(input: PainInput): ValidationErrors {
   // Ohne Beschwerden gibt es nichts zu prüfen
   if (!input.hasPain) return errors;
 
-  if (!input.location) {
-    errors.location = 'Bitte wähle eine Körperstelle.';
+  if (input.pains.length === 0) {
+    errors.pains = 'Bitte wähle mindestens eine Körperstelle.';
+    return errors;
   }
 
-  if (input.level === null || !Number.isInteger(input.level) || input.level < 0 || input.level > 10) {
-    errors.level = 'Bitte gib eine Stärke zwischen 0 und 10 an.';
+  const locations = input.pains.map((pain) => pain.location);
+  if (new Set(locations).size !== locations.length) {
+    errors.pains = 'Jede Körperstelle darf nur einmal vorkommen.';
+  }
+
+  const hasInvalidLevel = input.pains.some(
+    (pain) => pain.level === null || !Number.isInteger(pain.level) || pain.level < 0 || pain.level > 10,
+  );
+  if (hasInvalidLevel) {
+    errors.levels = 'Bitte gib für jede Stelle eine Stärke zwischen 0 und 10 an.';
   }
 
   return errors;
 }
 
+/** Höchste angegebene Stärke, 0 ohne Angaben */
+export function maxPainLevel(pains: PainEntry[]): number {
+  return pains.reduce((max, pain) => Math.max(max, pain.level ?? 0), 0);
+}
+
 /** Ab dieser Schmerzstärke zeigt die App den ärztlichen Hinweis (FA#0114) */
-export const PAIN_WARNING_THRESHOLD = 4;
+export const PAIN_WARNING_THRESHOLD = 6;

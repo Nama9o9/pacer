@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, type ReactNode } from 'react';
+import type { PainEntry } from '@/utils/validation';
 
 /**
  * Entwurf des Fragebogens. Liegt nur im Speicher der App,
@@ -17,10 +18,9 @@ export type OnboardingDraft = {
   runningSinceMonths: number | null;
   // Schritt 3: Trainingstage (1 = Montag … 7 = Sonntag)
   availableDays: number[];
-  // Schritt 4: Beschwerden
+  // Schritt 4: Beschwerden, eine Zeile pro Körperstelle
   hasPain: boolean;
-  painLocation: string | null;
-  painLevel: number | null;
+  pains: PainEntry[];
 };
 
 const initialDraft: OnboardingDraft = {
@@ -34,8 +34,7 @@ const initialDraft: OnboardingDraft = {
   runningSinceMonths: null,
   availableDays: [],
   hasPain: false,
-  painLocation: null,
-  painLevel: null,
+  pains: [],
 };
 
 type OnboardingContextValue = {

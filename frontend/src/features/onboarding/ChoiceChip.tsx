@@ -1,17 +1,19 @@
-import { Pressable, StyleSheet, Text } from 'react-native';
+import { Pressable, StyleSheet, Text, type StyleProp, type ViewStyle } from 'react-native';
 import { colors } from './styles';
 
 type ChoiceChipProps = {
   label: string;
   selected: boolean;
   onPress: () => void;
+  /** Überschreibt z. B. die Breite, wenn mehr als zwei Knöpfe in eine Reihe sollen */
+  style?: StyleProp<ViewStyle>;
 };
 
 /** Auswahlknopf für Distanz, Erfahrung, Wochentage und Körperstellen */
-export function ChoiceChip({ label, selected, onPress }: ChoiceChipProps) {
+export function ChoiceChip({ label, selected, onPress, style }: ChoiceChipProps) {
   return (
     <Pressable
-      style={[styles.chip, selected && styles.chipSelected]}
+      style={[styles.chip, style, selected && styles.chipSelected]}
       onPress={onPress}
       accessibilityRole="button"
       accessibilityState={{ selected }}
