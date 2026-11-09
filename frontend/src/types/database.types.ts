@@ -96,8 +96,6 @@ export type Database = {
           created_at: string
           km_per_week: number
           longest_run_km: number
-          pain_level: number | null
-          pain_location: string | null
           recent_5k_time_s: number
           running_since_months: number
           runs_per_week: number
@@ -109,8 +107,6 @@ export type Database = {
           created_at?: string
           km_per_week: number
           longest_run_km: number
-          pain_level?: number | null
-          pain_location?: string | null
           recent_5k_time_s: number
           running_since_months: number
           runs_per_week: number
@@ -122,8 +118,6 @@ export type Database = {
           created_at?: string
           km_per_week?: number
           longest_run_km?: number
-          pain_level?: number | null
-          pain_location?: string | null
           recent_5k_time_s?: number
           running_since_months?: number
           runs_per_week?: number
@@ -176,6 +170,48 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "goals_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      pain_reports: {
+        Row: {
+          baseline_id: string | null
+          created_at: string
+          level: number
+          location: Database["public"]["Enums"]["body_location"]
+          pain_report_id: string
+          user_id: string
+        }
+        Insert: {
+          baseline_id?: string | null
+          created_at?: string
+          level: number
+          location: Database["public"]["Enums"]["body_location"]
+          pain_report_id?: string
+          user_id: string
+        }
+        Update: {
+          baseline_id?: string | null
+          created_at?: string
+          level?: number
+          location?: Database["public"]["Enums"]["body_location"]
+          pain_report_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pain_reports_baseline_id_fkey"
+            columns: ["baseline_id"]
+            isOneToOne: false
+            referencedRelation: "baselines"
+            referencedColumns: ["baseline_id"]
+          },
+          {
+            foreignKeyName: "pain_reports_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
@@ -250,10 +286,34 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      complete_onboarding: {
+        Args: {
+          p_available_days: number[]
+          p_distance_m: number
+          p_km_per_week: number
+          p_longest_run_km: number
+          p_pains?: Json
+          p_race_date: string
+          p_recent_5k_time_s: number
+          p_running_since_months: number
+          p_runs_per_week: number
+          p_target_time_s: number
+        }
+        Returns: string
+      }
     }
     Enums: {
       activity_source: "manual" | "strava"
+      body_location:
+        | "knee_left"
+        | "knee_right"
+        | "shin"
+        | "achilles"
+        | "calf"
+        | "foot"
+        | "hip"
+        | "back"
+        | "other"
       fitness_level: "beginner" | "intermediate" | "advanced"
       goal_feasibility: "realistic" | "ambitious" | "unrealistic"
     }
@@ -387,6 +447,17 @@ export const Constants = {
   public: {
     Enums: {
       activity_source: ["manual", "strava"],
+      body_location: [
+        "knee_left",
+        "knee_right",
+        "shin",
+        "achilles",
+        "calf",
+        "foot",
+        "hip",
+        "back",
+        "other",
+      ],
       fitness_level: ["beginner", "intermediate", "advanced"],
       goal_feasibility: ["realistic", "ambitious", "unrealistic"],
     },
