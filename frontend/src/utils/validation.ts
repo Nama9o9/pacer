@@ -35,6 +35,18 @@ const MAX_PACE_S_PER_KM = 900;
 // Umrechnungen
 // ---------------------------------------------------------------------
 
+/** Ganzzahl aus einem Textfeld; leer oder ungültig ergibt 0 */
+export function parseInteger(text: string): number {
+  const value = Number.parseInt(text, 10);
+  return Number.isNaN(value) ? 0 : value;
+}
+
+/** Kommazahl aus einem Textfeld, akzeptiert „24,5“ und „24.5“; leer oder ungültig ergibt 0 */
+export function parseDecimal(text: string): number {
+  const value = Number.parseFloat(text.replace(',', '.'));
+  return Number.isNaN(value) ? 0 : value;
+}
+
 /** Stunden, Minuten und Sekunden in Sekunden umrechnen */
 export function toSeconds(hours: number, minutes: number, seconds: number): number {
   return hours * 3600 + minutes * 60 + seconds;
