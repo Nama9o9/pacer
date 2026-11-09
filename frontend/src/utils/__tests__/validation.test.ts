@@ -1,10 +1,12 @@
 import {
   calculatePace,
+  formatDuration,
   formatPace,
   maxPainLevel,
   parseDecimal,
   parseInteger,
   parseGermanDate,
+  toIsoDate,
   toSeconds,
   validateAvailableDays,
   validateBaseline,
@@ -48,6 +50,17 @@ describe('Umrechnungen', () => {
     expect(formatPace(369)).toBe('6:09');
     expect(formatPace(300)).toBe('5:00');
     expect(formatPace(65)).toBe('1:05');
+  });
+
+  it('formatiert Dauern mit und ohne Stunden', () => {
+    expect(formatDuration(7800)).toBe('2:10:00');
+    expect(formatDuration(1710)).toBe('28:30');
+    expect(formatDuration(3605)).toBe('1:00:05');
+  });
+
+  it('wandelt ein Datum ohne Zeitzonenverschiebung um', () => {
+    expect(toIsoDate(new Date(2027, 3, 18))).toBe('2027-04-18');
+    expect(toIsoDate(new Date(2027, 0, 1, 0, 30))).toBe('2027-01-01');
   });
 
   it('zählt ganze Wochen bis zum Datum', () => {

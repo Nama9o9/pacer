@@ -93,6 +93,24 @@ export function formatPace(secondsPerKm: number): string {
   return `${minutes}:${seconds.toString().padStart(2, '0')}`;
 }
 
+/** Dauer als Text: unter einer Stunde „28:30“, sonst „2:10:00“ */
+export function formatDuration(totalSeconds: number): string {
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+  const pad = (n: number) => n.toString().padStart(2, '0');
+  return hours > 0 ? `${hours}:${pad(minutes)}:${pad(seconds)}` : `${minutes}:${pad(seconds)}`;
+}
+
+/**
+ * Datum als „JJJJ-MM-TT“ für die Datenbank.
+ * Bewusst ohne toISOString(), das rechnet in UTC um und kann den Tag verschieben.
+ */
+export function toIsoDate(date: Date): string {
+  const pad = (n: number) => n.toString().padStart(2, '0');
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+}
+
 /** Ganze Wochen von heute bis zum Datum (negativ, wenn es in der Vergangenheit liegt) */
 export function weeksUntil(date: Date, today: Date = new Date()): number {
   const msPerWeek = 7 * 24 * 60 * 60 * 1000;
@@ -259,4 +277,4 @@ export function maxPainLevel(pains: PainEntry[]): number {
 }
 
 /** Ab dieser Schmerzstärke zeigt die App den ärztlichen Hinweis (FA#0114) */
-export const PAIN_WARNING_THRESHOLD = 6;
+export const PAIN_WARNING_THRESHOLD = 6; 
