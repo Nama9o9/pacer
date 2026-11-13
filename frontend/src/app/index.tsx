@@ -1,69 +1,95 @@
-import { Link } from 'expo-router';
-import { Pressable, StyleSheet } from 'react-native';
+import { useState } from 'react';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-import { MaxContentWidth, Spacing } from '@/constants/theme';
+import { RetryScreen } from '@/components/RetryScreen';
+import { CardLayout, MaxContentWidth, Palette } from '@/constants/theme';
+import { CoachCard } from '@/features/today/CoachCard';
+import { GoalHeroCard } from '@/features/today/GoalHeroCard';
+import { TodayCard } from '@/features/today/TodayCard';
+import { useTodayData } from '@/features/today/useTodayData';
+import { WeekStrip } from '@/features/today/WeekStrip';
 import { supabase } from '@/utils/supabase';
+import { assessGoal, buildWeek, formatLongDate, greetingFor, isTrainingDay } from '@/utils/today';
 
 /**
- * Vorläufiger Startscreen für M1.
- * Wird durch den Screen „Heute“ ersetzt (geplante Einheit, Wochenübersicht, Coach).
+ * Screen „Heute“: Ziel, heutiger Tag und Woche auf einen Blick.
+ * Zeigt nur vorhandene Daten; der Trainingsplan folgt später.
  */
-export default function HomeScreen() {
+export default function TodayScreen() {
+  const data = useTodayData();
+  // Zeitpunkt einmal beim Öffnen festhalten, damit alle Karten denselben Tag nutzen
+  const [now] = useState(() => new Date());
+
+  if (data.status === 'loading') {
+    return (
+      <View style={styles.center}>
+        <ActivityIndicator color={Palette.teal} />
+      </View>
+    );
+  }
+
+  if (data.status === 'error') {
+    return <RetryScreen onRetry={data.reload} />;
+  }
+
+  if (data.status === 'missing') {
+    return (
+      <RetryScreen
+        message="Dein Ziel oder deine Laufbasis wurde nicht gefunden."
+        onRetry={data.reload}
+      />
+    );
+  }
+
+  const { goal, baseline } = data;
+
   return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.content}>
-          <ThemedText type="title">Pacer</ThemedText>
-          <ThemedText style={styles.subtitle}>
-            Dein KI-Lauf-Coach. Hier entsteht der Screen „Heute“.
-          </ThemedText>
-        </ThemedView>
-
-        {/* Vorläufig, bis die automatische Weiterleitung ins Onboarding steht */}
-        <Link href="/onboarding/goal" asChild>
-          <Pressable style={styles.button}>
-            <ThemedText>Onboarding starten</ThemedText>
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView contentContainerStyle={styles.content}>
+        <View style={styles.header}>
+          <View style={styles.headerText}>
+            <Text style={styles.date}>{formatLongDate(now)}</Text>
+            <Text style={styles.greeting}>{greetingFor(now)}</Text>
+          </View>
+          {/* Vorläufig hier, zieht später in Profil/Einstellungen um.
+              Nach signOut() leitet das Root-Layout automatisch zum Login. */}
+          <Pressable onPress={() => supabase.auth.signOut()} hitSlop={12} accessibilityRole="button">
+            <Text style={styles.signOut}>Abmelden</Text>
           </Pressable>
-        </Link>
+        </View>
 
-        {/* Vorläufiger Logout, zieht später in Profil/Einstellungen um.
-            Nach signOut() leitet das Root-Layout automatisch zum Login. */}
-        <Pressable onPress={() => supabase.auth.signOut()} style={styles.button}>
-          <ThemedText>Abmelden</ThemedText>
-        </Pressable>
-      </SafeAreaView>
-    </ThemedView>
+        <GoalHeroCard goal={goal} assessment={assessGoal(goal, baseline)} today={now} />
+        <TodayCard isTrainingDay={isTrainingDay(now, baseline.available_days)} />
+        <WeekStrip week={buildWeek(now, baseline.available_days)} />
+        <CoachCard />
+
+        <Text style={styles.disclaimer}>Pacer ersetzt keine ärztliche Beratung.</Text>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'center',
-  },
-  safeArea: {
-    flex: 1,
-    maxWidth: MaxContentWidth,
-    alignItems: 'center',
-    paddingHorizontal: Spacing.four,
-    paddingBottom: Spacing.four,
-    gap: Spacing.three,
-  },
+  center: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: Palette.mist },
+  safeArea: { flex: 1, backgroundColor: Palette.mist },
   content: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: Spacing.two,
+    width: '100%',
+    maxWidth: MaxContentWidth,
+    alignSelf: 'center',
+    padding: CardLayout.padding,
+    gap: CardLayout.gap,
   },
-  subtitle: {
-    textAlign: 'center',
+  header: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    marginTop: 8,
+    marginBottom: 4,
   },
-  button: {
-    paddingVertical: Spacing.two,
-    paddingHorizontal: Spacing.four,
-  },
+  headerText: { gap: 2 },
+  date: { fontSize: 14, color: Palette.textSecondary },
+  greeting: { fontSize: 28, fontWeight: '700', color: Palette.teal },
+  signOut: { fontSize: 14, color: Palette.textSecondary, paddingTop: 2 },
+  disclaimer: { fontSize: 12, color: Palette.textSecondary, textAlign: 'center', marginTop: 8 },
 });
