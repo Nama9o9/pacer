@@ -61,5 +61,31 @@ export const Spacing = {
   six: 64,
 } as const;
 
+/** Markenfarben von Pacer (vorerst nur heller Modus) */
+export const Palette = {
+  /** Teal Waters: Text, Primärbuttons, Hero-Karte */
+  teal: '#204654',
+  /** Spring Meadow: Akzent, aktive Zustände, Text auf Teal, Ampel „realistisch“ */
+  meadow: '#CAFFA6',
+  /** Glacial Sky: Coach, Hinweise */
+  sky: '#A9E0F1',
+  /** Morning Mist: Hintergrund */
+  mist: '#F7F9E1',
+  textSecondary: '#567377',
+  line: '#E2E7D3',
+  card: '#FFFFFF',
+  /** Ampel „ambitioniert“ */
+  amber: '#F6D58A',
+  /** Ampel „unrealistisch“ */
+  coral: '#F5BBA9',
+} as const;
+
+/** Einheitliche Maße für Karten */
+export const CardLayout = {
+  radius: 20,
+  padding: 16,
+  gap: 16,
+} as const;
+
 export const BottomTabInset = Platform.select({ ios: 50, android: 80 }) ?? 0;
 export const MaxContentWidth = 800;
