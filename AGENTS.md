@@ -4,12 +4,12 @@
 - Code und Kommentare: Englisch
 - Dokumentation: Deutsch
 
-### Benennung
-- lowerCamelCase: Variablen, Funktionen
-- UpperCamelCase: React-Komponenten, Typen
-- snake_case: Tabellen- und Spaltennamen in der Datenbank
-- SCREAMING_SNAKE_CASE: Konstanten, Enum-Werte
-- Singular für einzelne Objekte, Plural für Sammlungen (`getRun()`, `getRuns()`)
+## Benennung
+- Komponenten und Provider: PascalCase, wie der Komponentenname (`ChoiceChip.tsx`, `AuthProvider.tsx`)
+- Hooks, Utils, Konstanten, Styles: camelCase (`useTheme.ts`, `feasibility.ts`, `styles.ts`)
+- Routen in `frontend/src/app/`: Kleinbuchstaben, wie von Expo Router vorgegeben (`goal.tsx`)
+- Allgemeine UI-Komponenten in `components/`, bereichsbezogene in `features/<bereich>/`
+- Fachlogik als reine Funktionen in `utils/`, mit Tests in `utils/__tests__/`
 
 ### Prinzipien
 - KISS, DRY, Single Responsibility
