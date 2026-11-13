@@ -4,7 +4,7 @@ import { AuthProvider, useAuth } from '@/providers/AuthProvider';
 
 /**
  * Entscheidet anhand von Session und Zielstatus, welche Screens erreichbar sind:
- * ohne Login → Login/Registrierung, ohne aktives Ziel → Onboarding, sonst → „Heute“.
+ * ohne Login → Login/Registrierung, ohne aktives Ziel → Onboarding, sonst → Tabs mit „Heute“.
  * Ändert sich der Status, leitet Stack.Protected automatisch um.
  */
 function RootNavigator() {
@@ -23,7 +23,7 @@ function RootNavigator() {
   return (
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Protected guard={isLoggedIn && hasGoal}>
-        <Stack.Screen name="index" />
+        <Stack.Screen name="(tabs)" />
       </Stack.Protected>
       <Stack.Protected guard={isLoggedIn && !hasGoal}>
         <Stack.Screen name="onboarding" />

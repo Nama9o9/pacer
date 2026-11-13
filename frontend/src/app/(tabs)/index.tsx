@@ -45,7 +45,8 @@ export default function TodayScreen() {
   const { goal, baseline } = data;
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    // Unten kein Safe-Area-Abstand: Die Tab-Leiste liegt darunter und übernimmt den Rand
+    <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.header}>
           <View style={styles.headerText}>
