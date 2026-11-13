@@ -4,6 +4,7 @@
   "main": "expo-router/entry",
   "dependencies": {
     "@expo/ui": "~58.0.25",
+    "@expo/vector-icons": "^15.0.2",
     "@react-native-async-storage/async-storage": "2.2.0",
     "@supabase/supabase-js": "^2.118.0",
     "@types/jest": "30.0.0",
@@ -46,12 +47,11 @@
     "web": "expo start --web",
     "lint": "expo lint"
   },
-  
-  "private": true, 
+  "private": true,
   "jest": {
-  "preset": "jest-expo",
-  "moduleNameMapper": {
-    "^@/(.*)$": "<rootDir>/src/$1"
+    "preset": "jest-expo",
+    "moduleNameMapper": {
+      "^@/(.*)$": "<rootDir>/src/$1"
+    }
   }
-}
 }
