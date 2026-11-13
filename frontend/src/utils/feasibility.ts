@@ -7,6 +7,13 @@
 
 export type Feasibility = 'realistic' | 'ambitious' | 'unrealistic';
 
+/** Anzeigetexte der Ampel */
+export const FEASIBILITY_LABELS: Record<Feasibility, string> = {
+  realistic: 'Realistisch',
+  ambitious: 'Ambitioniert',
+  unrealistic: 'Unrealistisch',
+};
+
 export type FeasibilityInput = {
   distanceM: number;
   targetTimeS: number;

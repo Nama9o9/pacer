@@ -19,6 +19,11 @@ export const GOAL_DISTANCES = [
   { label: 'Marathon', meters: 42195 },
 ] as const;
 
+/** Anzeigename einer Zieldistanz, z. B. 21097 → „Halbmarathon“ */
+export function distanceLabel(distanceM: number): string {
+  return GOAL_DISTANCES.find((d) => d.meters === distanceM)?.label ?? `${distanceM / 1000} km`;
+}
+
 /** Auswahl für „Laufen seit“, gespeichert als ungefähre Monate */
 export const RUNNING_SINCE_OPTIONS = [
   { label: 'unter 3 Monate', months: 1 },
