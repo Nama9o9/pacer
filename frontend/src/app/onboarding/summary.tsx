@@ -4,13 +4,14 @@ import { router } from 'expo-router';
 import { supabase } from '@/utils/supabase';
 import { useOnboarding } from '@/features/onboarding/OnboardingContext';
 import { colors, onboardingStyles as s } from '@/features/onboarding/styles';
-import { assessFeasibility, type Feasibility } from '@/utils/feasibility';
+import { useAuth } from '@/providers/AuthProvider';
+import { assessFeasibility, FEASIBILITY_LABELS, type Feasibility } from '@/utils/feasibility';
 import {
-  GOAL_DISTANCES,
   PAIN_LOCATIONS,
   RUNNING_SINCE_OPTIONS,
   WEEKDAYS,
   calculatePace,
+  distanceLabel,
   formatDuration,
   formatPace,
   toIsoDate,
@@ -19,13 +20,14 @@ import {
 
 /** Darstellung der Ampel */
 const FEASIBILITY_STYLES: Record<Feasibility, { label: string; color: string; background: string }> = {
-  realistic: { label: 'Realistisch', color: '#166534', background: '#DCFCE7' },
-  ambitious: { label: 'Ambitioniert', color: '#92400E', background: '#FEF3C7' },
-  unrealistic: { label: 'Unrealistisch', color: '#991B1B', background: '#FEE2E2' },
+  realistic: { label: FEASIBILITY_LABELS.realistic, color: '#166534', background: '#DCFCE7' },
+  ambitious: { label: FEASIBILITY_LABELS.ambitious, color: '#92400E', background: '#FEF3C7' },
+  unrealistic: { label: FEASIBILITY_LABELS.unrealistic, color: '#991B1B', background: '#FEE2E2' },
 };
 
 export default function SummaryScreen() {
   const { draft } = useOnboarding();
+  const { refreshGoalStatus } = useAuth();
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
 
@@ -51,7 +53,6 @@ export default function SummaryScreen() {
   const ampel = FEASIBILITY_STYLES[feasibility.level];
 
   // Anzeigetexte
-  const distanceLabel = GOAL_DISTANCES.find((d) => d.meters === distanceM)?.label ?? `${distanceM} m`;
   const runningSinceLabel =
     RUNNING_SINCE_OPTIONS.find((o) => o.months === draft.runningSinceMonths)?.label ?? '–';
   const daysLabel = WEEKDAYS.filter((d) => draft.availableDays.includes(d.value))
@@ -91,8 +92,9 @@ export default function SummaryScreen() {
     // gültig, nur ohne Einstufung; die Ampel lässt sich jederzeit neu berechnen.
     await supabase.from('goals').update({ feasibility: feasibility.level }).eq('goal_id', goalId);
 
+    // Mit aktivem Ziel leitet das Root-Layout automatisch auf „Heute“ weiter
+    await refreshGoalStatus();
     setIsSaving(false);
-    router.replace('/');
   }
 
   return (
@@ -107,7 +109,7 @@ export default function SummaryScreen() {
       <View style={styles.card}>
         <Text style={styles.cardLabel}>Ziel</Text>
         <Text style={styles.goalTitle}>
-          {distanceLabel} in {formatDuration(draft.targetTimeS)}
+          {distanceLabel(distanceM)} in {formatDuration(draft.targetTimeS)}
         </Text>
         <Text style={styles.row}>
           Zielpace {formatPace(calculatePace(distanceM, draft.targetTimeS))} /km
