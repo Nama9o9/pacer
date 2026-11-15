@@ -39,10 +39,11 @@
     "typescript": "~6.0.3"
   },
   "scripts": {
-    "start": "expo start",
+    "start": "expo start --localhost --port 8082",
+    "start:lan": "expo start --port 8082",
     "test": "jest",
     "reset-project": "node ./scripts/reset-project.js",
-    "android": "expo start --android",
+    "android": "expo start --android --localhost --port 8082",
     "emulator": "emulator -avd Medium_Phone_API_37.0 -dns-server 8.8.8.8,1.1.1.1",
     "ios": "expo start --ios",
     "web": "expo start --web",
