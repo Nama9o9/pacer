@@ -2,12 +2,12 @@ import {
   createEmptyRunForm,
   defaultStartTime,
   filledFields,
-  formatGermanDate,
   parseDistanceM,
   parseOptionalInteger,
   parseRunForm,
   type RunForm,
 } from '@/utils/runEntry';
+import { formatGermanDate } from '@/utils/validation';
 
 // Fester „Jetzt“-Zeitpunkt: Freitag, 13.11.2026, 18:47
 const NOW = new Date(2026, 10, 13, 18, 47);

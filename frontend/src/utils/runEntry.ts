@@ -4,7 +4,7 @@
  */
 
 import type { ActivityInput } from '@/utils/activities';
-import { parseDecimal, parseGermanDate, parseInteger, toSeconds } from '@/utils/validation';
+import { formatGermanDate, parseDecimal, parseGermanDate, parseInteger, toSeconds } from '@/utils/validation';
 
 /** Höchstens 100 km pro Lauf */
 export const MAX_RUN_DISTANCE_M = 100_000;
@@ -64,12 +64,6 @@ export function parseOptionalInteger(text: string): number | null {
 export function parseDistanceM(text: string): number {
   if (!/^\d+([.,]\d+)?$/.test(text.trim())) return 0;
   return Math.round(parseDecimal(text) * 1000);
-}
-
-/** Datum TT.MM.JJJJ als Text, für den Standardwert „heute“ */
-export function formatGermanDate(date: Date): string {
-  const pad = (n: number) => n.toString().padStart(2, '0');
-  return `${pad(date.getDate())}.${pad(date.getMonth() + 1)}.${date.getFullYear()}`;
 }
 
 /**
