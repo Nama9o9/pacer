@@ -43,6 +43,7 @@
     "test": "jest",
     "reset-project": "node ./scripts/reset-project.js",
     "android": "expo start --android",
+    "emulator": "emulator -avd Medium_Phone_API_37.0 -dns-server 8.8.8.8,1.1.1.1",
     "ios": "expo start --ios",
     "web": "expo start --web",
     "lint": "expo lint"
