@@ -9,6 +9,10 @@ import {
   isoWeekday,
   isTrainingDay,
   parseIsoDate,
+  runDaysInWeek,
+  runsOnDay,
+  sumRuns,
+  weekBounds,
 } from '@/utils/today';
 
 // Feste Daten statt new Date(), damit die Tests jeden Tag gleich laufen
@@ -160,5 +164,66 @@ describe('assessGoal', () => {
 
   it('liefert die Riegel-Prognose aus der 5-km-Zeit', () => {
     expect(assessGoal(goal, baseline).predictedTimeS).toBeGreaterThan(2 * 3600);
+  });
+});
+
+describe('weekBounds', () => {
+  it('reicht von Montag 0:00 bis zum nächsten Montag 0:00', () => {
+    expect(weekBounds(FRIDAY)).toEqual({ start: new Date(2026, 10, 9), end: new Date(2026, 10, 16) });
+    expect(weekBounds(SUNDAY).start).toEqual(new Date(2026, 10, 9));
+    expect(weekBounds(MONDAY).start).toEqual(new Date(2026, 10, 16));
+  });
+});
+
+describe('runDaysInWeek', () => {
+  // Zeitstempel wie aus der Datenbank (UTC), erzeugt aus lokaler Zeit
+  const at = (...args: [number, number, number, number, number]) => new Date(...args).toISOString();
+
+  it('ordnet Läufe dem lokalen Wochentag zu', () => {
+    const runs = [at(2026, 10, 9, 7, 0), at(2026, 10, 11, 18, 30), at(2026, 10, 11, 6, 0)];
+    expect(runDaysInWeek(FRIDAY, runs)).toEqual([1, 3]);
+  });
+
+  it('zählt einen Lauf kurz vor Mitternacht zum selben Tag', () => {
+    expect(runDaysInWeek(FRIDAY, [at(2026, 10, 12, 23, 59)])).toEqual([4]);
+  });
+
+  it('ignoriert Läufe aus anderen Wochen', () => {
+    const runs = [at(2026, 10, 8, 23, 59), at(2026, 10, 16, 0, 0)];
+    expect(runDaysInWeek(FRIDAY, runs)).toEqual([]);
+  });
+
+  it('zählt Sonntag 23:59 noch zur alten Woche', () => {
+    expect(runDaysInWeek(SUNDAY, [at(2026, 10, 15, 23, 59)])).toEqual([7]);
+    expect(runDaysInWeek(MONDAY, [at(2026, 10, 15, 23, 59)])).toEqual([]);
+  });
+});
+
+describe('buildWeek mit Läufen', () => {
+  it('markiert Tage mit Lauf als erledigt', () => {
+    const week = buildWeek(FRIDAY, [1, 3, 5], [1, 2]);
+    expect(week.filter((d) => d.hasRun).map((d) => d.isoDay)).toEqual([1, 2]);
+  });
+});
+
+describe('runsOnDay und sumRuns', () => {
+  const run = (date: Date, distance_m: number, duration_s: number) => ({
+    started_at: date.toISOString(),
+    distance_m,
+    duration_s,
+  });
+
+  it('findet nur Läufe von heute, auch kurz nach Mitternacht', () => {
+    const runs = [
+      run(new Date(2026, 10, 12, 23, 59), 5000, 1500),
+      run(new Date(2026, 10, 13, 0, 1), 3000, 900),
+      run(new Date(2026, 10, 13, 18, 0), 8500, 3130),
+    ];
+    expect(runsOnDay(FRIDAY, runs).map((r) => r.distance_m)).toEqual([3000, 8500]);
+  });
+
+  it('summiert Distanz und Dauer', () => {
+    expect(sumRuns([run(FRIDAY, 3000, 900), run(FRIDAY, 8500, 3130)])).toEqual({ distanceM: 11500, durationS: 4030 });
+    expect(sumRuns([])).toBeNull();
   });
 });

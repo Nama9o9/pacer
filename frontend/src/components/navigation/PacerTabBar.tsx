@@ -20,9 +20,8 @@ type TabConfig = {
 /** Reihenfolge und Darstellung der Tabs; die Reihenfolge der Routen kommt aus (tabs)/_layout.tsx */
 const TABS: TabConfig[] = [
   { key: 'index', label: 'Heute', icon: 'sunny-outline', iconActive: 'sunny' },
-  { key: 'plan', label: 'Plan', icon: 'calendar-outline', iconActive: 'calendar' },
   { key: 'coach', label: 'Coach', icon: 'chatbubble-ellipses-outline', iconActive: 'chatbubble-ellipses' },
-  { key: 'history', label: 'Verlauf', icon: 'stats-chart-outline', iconActive: 'stats-chart' },
+  { key: 'profile', label: 'Profil', icon: 'person-outline', iconActive: 'person' },
 ];
 
 /**
