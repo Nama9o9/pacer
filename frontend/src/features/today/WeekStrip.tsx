@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { Palette } from '@/constants/theme';
 import type { WeekDay } from '@/utils/today';
@@ -8,6 +8,8 @@ import { todayStyles } from './styles';
 
 type WeekStripProps = {
   week: WeekDay[];
+  /** Öffnet den ganzen Trainingsplan */
+  onOpenPlan: () => void;
 };
 
 /** Beschreibung eines Tages für Screenreader */
@@ -23,7 +25,7 @@ function describeDay(day: WeekDay): string {
  * Wochenleiste Mo–So.
  * Gelaufen: Meadow mit Häkchen. Trainingstag: heller Hintergrund, fette Zahl. Heute: Rahmen.
  */
-export function WeekStrip({ week }: WeekStripProps) {
+export function WeekStrip({ week, onOpenPlan }: WeekStripProps) {
   return (
     <View style={todayStyles.card}>
       <Text style={todayStyles.label}>Diese Woche</Text>
@@ -48,6 +50,11 @@ export function WeekStrip({ week }: WeekStripProps) {
           </View>
         ))}
       </View>
+
+      <Pressable style={styles.planLink} onPress={onOpenPlan} accessibilityRole="button">
+        <Text style={styles.planLinkText}>Ganzen Plan ansehen</Text>
+        <Ionicons name="chevron-forward" size={18} color={Palette.teal} />
+      </Pressable>
     </View>
   );
 }
@@ -71,4 +78,15 @@ const styles = StyleSheet.create({
   circleToday: { borderColor: Palette.teal },
   date: { fontSize: 14, color: Palette.textSecondary },
   dateTraining: { fontWeight: '700', color: Palette.teal },
+  planLink: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 4,
+    marginTop: 10,
+    paddingVertical: 12,
+    borderTopWidth: 1,
+    borderTopColor: Palette.line,
+  },
+  planLinkText: { fontSize: 15, fontWeight: '700', color: Palette.teal },
 });

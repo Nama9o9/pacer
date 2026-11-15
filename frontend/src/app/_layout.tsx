@@ -24,6 +24,7 @@ function RootNavigator() {
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Protected guard={isLoggedIn && hasGoal}>
         <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="plan" />
         <Stack.Screen name="run/new" options={{ presentation: 'modal' }} />
       </Stack.Protected>
       <Stack.Protected guard={isLoggedIn && !hasGoal}>

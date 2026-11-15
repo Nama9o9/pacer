@@ -1,4 +1,4 @@
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -10,7 +10,6 @@ import { TodayCard } from '@/features/today/TodayCard';
 import { useTodayData } from '@/features/today/useTodayData';
 import { WeekStrip } from '@/features/today/WeekStrip';
 import { formatRunSummary } from '@/utils/activities';
-import { supabase } from '@/utils/supabase';
 import {
   assessGoal,
   buildWeek,
@@ -64,11 +63,6 @@ export default function TodayScreen() {
             <Text style={styles.date}>{formatLongDate(now)}</Text>
             <Text style={styles.greeting}>{greetingFor(now)}</Text>
           </View>
-          {/* Vorläufig hier, zieht später in Profil/Einstellungen um.
-              Nach signOut() leitet das Root-Layout automatisch zum Login. */}
-          <Pressable onPress={() => supabase.auth.signOut()} hitSlop={12} accessibilityRole="button">
-            <Text style={styles.signOut}>Abmelden</Text>
-          </Pressable>
         </View>
 
         <GoalHeroCard goal={goal} assessment={assessGoal(goal, baseline)} today={now} />
@@ -77,7 +71,10 @@ export default function TodayScreen() {
           todayRunSummary={todayTotal && formatRunSummary(todayTotal.distanceM, todayTotal.durationS)}
           onAddRun={() => router.push('/run/new')}
         />
-        <WeekStrip week={buildWeek(now, baseline.available_days, runDays)} />
+        <WeekStrip
+          week={buildWeek(now, baseline.available_days, runDays)}
+          onOpenPlan={() => router.push('/plan')}
+        />
         <CoachCard />
 
         <Text style={styles.disclaimer}>Pacer ersetzt keine ärztliche Beratung.</Text>
@@ -106,6 +103,5 @@ const styles = StyleSheet.create({
   headerText: { gap: 2 },
   date: { fontSize: 14, color: Palette.textSecondary },
   greeting: { fontSize: 28, fontWeight: '700', color: Palette.teal },
-  signOut: { fontSize: 14, color: Palette.textSecondary, paddingTop: 2 },
   disclaimer: { fontSize: 12, color: Palette.textSecondary, textAlign: 'center', marginTop: 8 },
 });
