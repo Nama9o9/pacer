@@ -80,10 +80,19 @@ export type WeekDay = {
   dayOfMonth: number;
   isTrainingDay: boolean;
   isToday: boolean;
+  /** An diesem Tag wurde mindestens ein Lauf eingetragen */
+  hasRun: boolean;
 };
 
-/** Die aktuelle Woche von Montag bis Sonntag, in der „heute“ liegt */
-export function buildWeek(today: Date, availableDays: readonly number[]): WeekDay[] {
+/**
+ * Die aktuelle Woche von Montag bis Sonntag, in der „heute“ liegt.
+ * runDays: ISO-Wochentage mit eingetragenem Lauf (siehe runDaysInWeek).
+ */
+export function buildWeek(
+  today: Date,
+  availableDays: readonly number[],
+  runDays: readonly number[] = [],
+): WeekDay[] {
   const mondayOffset = isoWeekday(today) - 1;
 
   return WEEKDAYS.map(({ label, value }) => {
@@ -95,8 +104,47 @@ export function buildWeek(today: Date, availableDays: readonly number[]): WeekDa
       dayOfMonth: date.getDate(),
       isTrainingDay: availableDays.includes(value),
       isToday: value === mondayOffset + 1,
+      hasRun: runDays.includes(value),
     };
   });
+}
+
+/** Beginn (Montag 0:00) und Ende (nächster Montag 0:00) der Woche in lokaler Zeit */
+export function weekBounds(today: Date): { start: Date; end: Date } {
+  const mondayOffset = isoWeekday(today) - 1;
+  const start = new Date(today.getFullYear(), today.getMonth(), today.getDate() - mondayOffset);
+  const end = new Date(start.getFullYear(), start.getMonth(), start.getDate() + 7);
+  return { start, end };
+}
+
+/**
+ * ISO-Wochentage dieser Woche, an denen gelaufen wurde.
+ * startedAt kommt als Zeitstempel aus der Datenbank (UTC) und wird in
+ * lokaler Zeit eingeordnet: Ein Lauf um 23:30 zählt zu diesem Tag, nicht zum nächsten.
+ */
+export function runDaysInWeek(today: Date, startedAts: readonly string[]): number[] {
+  const { start, end } = weekBounds(today);
+  const days = startedAts
+    .map((text) => new Date(text))
+    .filter((date) => date >= start && date < end)
+    .map(isoWeekday);
+  return [...new Set(days)].sort((a, b) => a - b);
+}
+
+/** Läufe, die am selben Kalendertag wie „heute“ begonnen haben (lokale Zeit) */
+export function runsOnDay<T extends { started_at: string }>(today: Date, runs: readonly T[]): T[] {
+  return runs.filter((run) => daysUntil(new Date(run.started_at), today) === 0);
+}
+
+/** Summe von Distanz und Dauer mehrerer Läufe, null ohne Läufe */
+export function sumRuns(
+  runs: readonly { distance_m: number; duration_s: number }[],
+): { distanceM: number; durationS: number } | null {
+  if (runs.length === 0) return null;
+  return {
+    distanceM: runs.reduce((sum, run) => sum + run.distance_m, 0),
+    durationS: runs.reduce((sum, run) => sum + run.duration_s, 0),
+  };
 }
 
 // ---------------------------------------------------------------------
