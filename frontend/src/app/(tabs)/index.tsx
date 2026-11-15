@@ -1,5 +1,5 @@
-import { useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { RetryScreen } from '@/components/RetryScreen';
@@ -9,8 +9,18 @@ import { GoalHeroCard } from '@/features/today/GoalHeroCard';
 import { TodayCard } from '@/features/today/TodayCard';
 import { useTodayData } from '@/features/today/useTodayData';
 import { WeekStrip } from '@/features/today/WeekStrip';
+import { formatRunSummary } from '@/utils/activities';
 import { supabase } from '@/utils/supabase';
-import { assessGoal, buildWeek, formatLongDate, greetingFor, isTrainingDay } from '@/utils/today';
+import {
+  assessGoal,
+  buildWeek,
+  formatLongDate,
+  greetingFor,
+  isTrainingDay,
+  runDaysInWeek,
+  runsOnDay,
+  sumRuns,
+} from '@/utils/today';
 
 /**
  * Screen „Heute“: Ziel, heutiger Tag und Woche auf einen Blick.
@@ -18,8 +28,6 @@ import { assessGoal, buildWeek, formatLongDate, greetingFor, isTrainingDay } fro
  */
 export default function TodayScreen() {
   const data = useTodayData();
-  // Zeitpunkt einmal beim Öffnen festhalten, damit alle Karten denselben Tag nutzen
-  const [now] = useState(() => new Date());
 
   if (data.status === 'loading') {
     return (
@@ -42,7 +50,10 @@ export default function TodayScreen() {
     );
   }
 
-  const { goal, baseline } = data;
+  // Zeitpunkt des Ladens gilt als „jetzt“, damit alle Karten denselben Tag nutzen
+  const { goal, baseline, weekRuns, loadedAt: now } = data;
+  const todayTotal = sumRuns(runsOnDay(now, weekRuns));
+  const runDays = runDaysInWeek(now, weekRuns.map((run) => run.started_at));
 
   return (
     // Unten kein Safe-Area-Abstand: Die Tab-Leiste liegt darunter und übernimmt den Rand
@@ -61,8 +72,12 @@ export default function TodayScreen() {
         </View>
 
         <GoalHeroCard goal={goal} assessment={assessGoal(goal, baseline)} today={now} />
-        <TodayCard isTrainingDay={isTrainingDay(now, baseline.available_days)} />
-        <WeekStrip week={buildWeek(now, baseline.available_days)} />
+        <TodayCard
+          isTrainingDay={isTrainingDay(now, baseline.available_days)}
+          todayRunSummary={todayTotal && formatRunSummary(todayTotal.distanceM, todayTotal.durationS)}
+          onAddRun={() => router.push('/run/new')}
+        />
+        <WeekStrip week={buildWeek(now, baseline.available_days, runDays)} />
         <CoachCard />
 
         <Text style={styles.disclaimer}>Pacer ersetzt keine ärztliche Beratung.</Text>

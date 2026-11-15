@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { Palette } from '@/constants/theme';
@@ -9,27 +10,40 @@ type WeekStripProps = {
   week: WeekDay[];
 };
 
-/** Wochenleiste Mo–So: Trainingstage gefüllt, heute mit Rahmen */
+/** Beschreibung eines Tages für Screenreader */
+function describeDay(day: WeekDay): string {
+  const parts = [`${day.label} ${day.dayOfMonth}.`];
+  if (day.hasRun) parts.push('gelaufen');
+  else if (day.isTrainingDay) parts.push('Trainingstag');
+  if (day.isToday) parts.push('heute');
+  return parts.join(', ');
+}
+
+/**
+ * Wochenleiste Mo–So.
+ * Gelaufen: Meadow mit Häkchen. Trainingstag: heller Hintergrund, fette Zahl. Heute: Rahmen.
+ */
 export function WeekStrip({ week }: WeekStripProps) {
   return (
     <View style={todayStyles.card}>
       <Text style={todayStyles.label}>Diese Woche</Text>
       <View style={styles.row}>
         {week.map((day) => (
-          <View
-            key={day.isoDay}
-            style={styles.day}
-            accessibilityLabel={`${day.label} ${day.dayOfMonth}.${day.isTrainingDay ? ', Trainingstag' : ''}${day.isToday ? ', heute' : ''}`}
-          >
+          <View key={day.isoDay} style={styles.day} accessibilityLabel={describeDay(day)}>
             <Text style={[styles.weekday, day.isToday && styles.today]}>{day.label}</Text>
             <View
               style={[
                 styles.circle,
                 day.isTrainingDay && styles.circleTraining,
+                day.hasRun && styles.circleDone,
                 day.isToday && styles.circleToday,
               ]}
             >
-              <Text style={[styles.date, day.isTrainingDay && styles.dateTraining]}>{day.dayOfMonth}</Text>
+              {day.hasRun ? (
+                <Ionicons name="checkmark" size={18} color={Palette.teal} />
+              ) : (
+                <Text style={[styles.date, day.isTrainingDay && styles.dateTraining]}>{day.dayOfMonth}</Text>
+              )}
             </View>
           </View>
         ))}
@@ -52,7 +66,8 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: 'transparent',
   },
-  circleTraining: { backgroundColor: Palette.meadow },
+  circleTraining: { backgroundColor: Palette.mist, borderColor: Palette.line },
+  circleDone: { backgroundColor: Palette.meadow, borderColor: Palette.meadow },
   circleToday: { borderColor: Palette.teal },
   date: { fontSize: 14, color: Palette.textSecondary },
   dateTraining: { fontWeight: '700', color: Palette.teal },
