@@ -122,6 +122,12 @@ export function weeksUntil(date: Date, today: Date = new Date()): number {
   return Math.floor((date.getTime() - today.getTime()) / msPerWeek);
 }
 
+/** Datum als Text im Format TT.MM.JJJJ, z. B. 05.01.2027 */
+export function formatGermanDate(date: Date): string {
+  const pad = (n: number) => n.toString().padStart(2, '0');
+  return `${pad(date.getDate())}.${pad(date.getMonth() + 1)}.${date.getFullYear()}`;
+}
+
 /**
  * Datum im Format TT.MM.JJJJ in ein Date umwandeln.
  * Gibt null zurück bei falschem Format oder unmöglichem Datum (z. B. 31.02.).
