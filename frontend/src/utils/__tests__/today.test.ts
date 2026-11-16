@@ -6,6 +6,7 @@ import {
   formatCountdown,
   formatLongDate,
   greetingFor,
+  greetingWithName,
   isoWeekday,
   isTrainingDay,
   parseIsoDate,
@@ -92,6 +93,21 @@ describe('greetingFor', () => {
     [at(0), 'Guten Abend'],
   ])('%s → %s', (date, expected) => {
     expect(greetingFor(date)).toBe(expected);
+  });
+});
+
+describe('greetingWithName', () => {
+  it('hängt den Vornamen an', () => {
+    expect(greetingWithName('Guten Tag', 'Nathalie')).toBe('Guten Tag, Nathalie');
+  });
+
+  it('nimmt bei mehreren Wörtern nur das erste', () => {
+    expect(greetingWithName('Guten Morgen', '  Alex   Muster ')).toBe('Guten Morgen, Alex');
+  });
+
+  it('lässt den Namen weg, wenn keiner vorhanden ist', () => {
+    expect(greetingWithName('Guten Abend', null)).toBe('Guten Abend');
+    expect(greetingWithName('Guten Abend', '   ')).toBe('Guten Abend');
   });
 });
 

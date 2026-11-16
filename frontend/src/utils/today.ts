@@ -64,6 +64,15 @@ export function greetingFor(date: Date): Greeting {
   return 'Guten Abend';
 }
 
+/**
+ * Begrüßung mit Vornamen, z. B. „Guten Tag, Nathalie“.
+ * Nimmt nur das erste Wort des Anzeigenamens; ohne Namen bleibt die Begrüßung allein.
+ */
+export function greetingWithName(greeting: Greeting, displayName: string | null): string {
+  const firstName = displayName?.trim().split(/\s+/)[0];
+  return firstName ? `${greeting}, ${firstName}` : greeting;
+}
+
 // ---------------------------------------------------------------------
 // Trainingstage und Woche
 // ---------------------------------------------------------------------
