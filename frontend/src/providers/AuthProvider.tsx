@@ -49,7 +49,8 @@ async function fetchGoalStatus(): Promise<GoalStatus> {
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [goalStatus, setGoalStatus] = useState<GoalStatus>('loading');
+  // Status gehört immer zu einem bestimmten Nutzer; passt er nicht zur aktuellen Session, gilt 'loading'
+  const [goalState, setGoalState] = useState<{ userId: string; status: GoalStatus } | null>(null);
 
   useEffect(() => {
     // Gespeicherte Session beim App-Start laden
@@ -69,27 +70,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Zielstatus nur bei Nutzerwechsel laden, nicht bei jeder Token-Erneuerung
   const userId = session?.user.id;
   useEffect(() => {
-    if (!userId) {
-      setGoalStatus('loading');
-      return;
-    }
+    if (!userId) return;
 
     let isCurrent = true;
-    setGoalStatus('loading');
     fetchGoalStatus().then((status) => {
       // Antwort verwerfen, falls sich der Nutzer inzwischen geändert hat
-      if (isCurrent) setGoalStatus(status);
+      if (isCurrent) setGoalState({ userId, status });
     });
     return () => {
       isCurrent = false;
     };
   }, [userId]);
 
+  // Ohne Nutzer oder bei neuem Nutzer abgeleitet 'loading', ohne extra setState im Effect
+  const goalStatus: GoalStatus = userId && goalState?.userId === userId ? goalState.status : 'loading';
+
   // Bewusst ohne Zwischenstand 'loading': Die Navigation bleibt stehen,
   // bis das Ergebnis da ist, und Stack.Protected leitet dann direkt um
   const refreshGoalStatus = useCallback(async () => {
-    setGoalStatus(await fetchGoalStatus());
-  }, []);
+    if (!userId) return;
+    const status = await fetchGoalStatus();
+    setGoalState({ userId, status });
+  }, [userId]);
 
   return (
     <AuthContext.Provider value={{ session, isLoading, goalStatus, refreshGoalStatus }}>
