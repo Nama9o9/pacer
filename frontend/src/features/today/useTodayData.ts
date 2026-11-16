@@ -87,6 +87,8 @@ export function useTodayData(): TodayDataState & { reload: () => void } {
       return () => {
         isCurrent = false;
       };
+      // reloadCount wird im Callback nicht gelesen, soll ihn aber neu erzeugen: „Erneut versuchen“ lädt so neu
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [reloadCount]),
   );
 
