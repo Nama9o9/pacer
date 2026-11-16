@@ -57,8 +57,8 @@ export default function NewRunScreen() {
       return;
     }
 
-    // „Heute“ lädt beim Zurückkehren automatisch neu
-    router.back();
+    // Direkt weiter zum Check-in; replace, damit „Zurück“ danach auf „Heute“ landet
+    router.replace({ pathname: '/run/checkin', params: { activityId: result.activityId } });
   }
 
   return (

@@ -133,6 +133,54 @@ export type Database = {
           },
         ]
       }
+      checkins: {
+        Row: {
+          activity_id: string
+          checkin_id: string
+          created_at: string
+          mood: number
+          motivation: number
+          note: string | null
+          rpe: number
+          user_id: string
+        }
+        Insert: {
+          activity_id: string
+          checkin_id?: string
+          created_at?: string
+          mood: number
+          motivation: number
+          note?: string | null
+          rpe: number
+          user_id: string
+        }
+        Update: {
+          activity_id?: string
+          checkin_id?: string
+          created_at?: string
+          mood?: number
+          motivation?: number
+          note?: string | null
+          rpe?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "checkins_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: true
+            referencedRelation: "activities"
+            referencedColumns: ["activity_id"]
+          },
+          {
+            foreignKeyName: "checkins_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       goals: {
         Row: {
           created_at: string
@@ -180,6 +228,7 @@ export type Database = {
       pain_reports: {
         Row: {
           baseline_id: string | null
+          checkin_id: string | null
           created_at: string
           level: number
           location: Database["public"]["Enums"]["body_location"]
@@ -188,6 +237,7 @@ export type Database = {
         }
         Insert: {
           baseline_id?: string | null
+          checkin_id?: string | null
           created_at?: string
           level: number
           location: Database["public"]["Enums"]["body_location"]
@@ -196,6 +246,7 @@ export type Database = {
         }
         Update: {
           baseline_id?: string | null
+          checkin_id?: string | null
           created_at?: string
           level?: number
           location?: Database["public"]["Enums"]["body_location"]
@@ -209,6 +260,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "baselines"
             referencedColumns: ["baseline_id"]
+          },
+          {
+            foreignKeyName: "pain_reports_checkin_id_fkey"
+            columns: ["checkin_id"]
+            isOneToOne: false
+            referencedRelation: "checkins"
+            referencedColumns: ["checkin_id"]
           },
           {
             foreignKeyName: "pain_reports_user_id_fkey"
@@ -298,6 +356,17 @@ export type Database = {
           p_running_since_months: number
           p_runs_per_week: number
           p_target_time_s: number
+        }
+        Returns: string
+      }
+      save_checkin: {
+        Args: {
+          p_activity_id: string
+          p_mood: number
+          p_motivation: number
+          p_note?: string
+          p_pains?: Json
+          p_rpe: number
         }
         Returns: string
       }
