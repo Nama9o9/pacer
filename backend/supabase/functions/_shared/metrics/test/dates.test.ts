@@ -1,7 +1,7 @@
 import { assertEquals, assertThrows } from '@std/assert';
 
-import { fromDayNumber, localDateOf, mondayOf, toDayNumber } from './dates.ts';
-import { MetricsInputError } from './errors.ts';
+import { fromDayNumber, localDateOf, mondayOf, toDayNumber } from '../dates.ts';
+import { MetricsInputError } from '../errors.ts';
 
 Deno.test('mondayOf: jeder Tag von Mo bis So führt zum selben Montag', () => {
   const days = ['2026-11-16', '2026-11-18', '2026-11-22'];

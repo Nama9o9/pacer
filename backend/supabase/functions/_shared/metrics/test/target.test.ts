@@ -1,7 +1,7 @@
 import { assertAlmostEquals, assertEquals, assertThrows } from '@std/assert';
 
-import { MetricsInputError } from './errors.ts';
-import { calculatePace, predictRaceTime, weeksUntil } from './target.ts';
+import { MetricsInputError } from '../errors.ts';
+import { calculatePace, predictRaceTime, weeksUntil } from '../target.ts';
 
 Deno.test('calculatePace: 5 km in 25:00 ergibt 300 s/km', () => {
   assertEquals(calculatePace(5000, 1500), 300);

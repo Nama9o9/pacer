@@ -1,8 +1,8 @@
 import { assertAlmostEquals, assertEquals, assertThrows } from '@std/assert';
 
-import { summarizeRecentWeeks, summarizeWeek } from './actual.ts';
-import { MetricsInputError } from './errors.ts';
-import type { ActivityMetricsInput } from './types.ts';
+import { summarizeRecentWeeks, summarizeWeek } from '../actual.ts';
+import { MetricsInputError } from '../errors.ts';
+import type { ActivityMetricsInput } from '../types.ts';
 
 // Woche Mo 16.11. bis So 22.11.2026; im November gilt in Berlin UTC+1
 const WEEK_START = '2026-11-16';

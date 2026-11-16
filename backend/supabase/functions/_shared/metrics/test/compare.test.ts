@@ -1,7 +1,7 @@
 import { assertAlmostEquals, assertEquals, assertThrows } from '@std/assert';
 
-import { compareSession, compareToGoal } from './compare.ts';
-import { MetricsInputError } from './errors.ts';
+import { compareSession, compareToGoal } from '../compare.ts';
+import { MetricsInputError } from '../errors.ts';
 
 // Geplant: 10 km in 50:00 = 300 s/km
 const PLANNED = { distanceM: 10000, durationS: 3000 };
