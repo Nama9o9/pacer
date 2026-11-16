@@ -25,6 +25,8 @@ export type TodayDataState =
       weekRuns: TodayRun[];
       /** Zeitpunkt des Ladens, gilt im Screen als „jetzt“ */
       loadedAt: Date;
+      /** Anzeigename aus profiles, null wenn keiner gesetzt ist */
+      displayName: string | null;
     };
 
 /**
@@ -66,7 +68,8 @@ export function useTodayData(): TodayDataState & { reload: () => void } {
           .gte('started_at', start.toISOString())
           .lt('started_at', end.toISOString())
           .order('started_at'),
-      ]).then(([goalResult, baselineResult, runsResult]) => {
+        supabase.from('profiles').select('display_name').maybeSingle(),
+      ]).then(([goalResult, baselineResult, runsResult, profileResult]) => {
         if (!isCurrent) return;
 
         if (goalResult.error || baselineResult.error || runsResult.error) {
@@ -80,6 +83,8 @@ export function useTodayData(): TodayDataState & { reload: () => void } {
             baseline: baselineResult.data,
             weekRuns: runsResult.data,
             loadedAt: now,
+            // Der Name ist nur Zierde: Fehlt er oder schlägt die Abfrage fehl, grüßt der Screen ohne Namen
+            displayName: profileResult.data?.display_name ?? null,
           });
         }
       });

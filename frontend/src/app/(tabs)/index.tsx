@@ -14,6 +14,7 @@ import {
   buildWeek,
   formatLongDate,
   greetingFor,
+  greetingWithName,
   isTrainingDay,
   runDaysInWeek,
   runsOnDay,
@@ -49,7 +50,7 @@ export default function TodayScreen() {
   }
 
   // Zeitpunkt des Ladens gilt als „jetzt“, damit alle Karten denselben Tag nutzen
-  const { goal, baseline, weekRuns, loadedAt: now } = data;
+  const { goal, baseline, weekRuns, loadedAt: now, displayName } = data;
   const todayTotal = sumRuns(runsOnDay(now, weekRuns));
   const runDays = runDaysInWeek(now, weekRuns.map((run) => run.started_at));
 
@@ -60,7 +61,7 @@ export default function TodayScreen() {
         <View style={styles.header}>
           <View style={styles.headerText}>
             <Text style={styles.date}>{formatLongDate(now)}</Text>
-            <Text style={styles.greeting}>{greetingFor(now)}</Text>
+            <Text style={styles.greeting}>{greetingWithName(greetingFor(now), displayName)}</Text>
           </View>
         </View>
 
