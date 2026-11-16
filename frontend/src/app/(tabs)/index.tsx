@@ -4,7 +4,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { RetryScreen } from '@/components/RetryScreen';
 import { CardLayout, MaxContentWidth, Palette } from '@/constants/theme';
-import { CoachCard } from '@/features/today/CoachCard';
 import { GoalHeroCard } from '@/features/today/GoalHeroCard';
 import { TodayCard } from '@/features/today/TodayCard';
 import { useTodayData } from '@/features/today/useTodayData';
@@ -75,7 +74,6 @@ export default function TodayScreen() {
           week={buildWeek(now, baseline.available_days, runDays)}
           onOpenPlan={() => router.push('/plan')}
         />
-        <CoachCard />
 
         <Text style={styles.disclaimer}>Pacer ersetzt keine ärztliche Beratung.</Text>
       </ScrollView>

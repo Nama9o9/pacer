@@ -5,6 +5,7 @@ import { useOnboarding } from '@/features/onboarding/OnboardingContext';
 import { StepHeader } from '@/features/onboarding/StepHeader';
 import { ChoiceChip } from '@/features/onboarding/ChoiceChip';
 import { colors, onboardingStyles as s } from '@/features/onboarding/styles';
+import { PAIN_LEVELS, painLocationLabel, setPainLevel, togglePainLocation } from '@/utils/pain';
 import {
   PAIN_LOCATIONS,
   PAIN_WARNING_THRESHOLD,
@@ -15,13 +16,6 @@ import {
   type ValidationErrors,
 } from '@/utils/validation';
 
-const PAIN_LEVELS = Array.from({ length: 11 }, (_, i) => i); // 0 bis 10
-
-/** Anzeigename einer Körperstelle */
-function labelFor(location: BodyLocation): string {
-  return PAIN_LOCATIONS.find((option) => option.value === location)?.label ?? location;
-}
-
 export default function PainScreen() {
   const { draft, updateDraft } = useOnboarding();
 
@@ -29,24 +23,9 @@ export default function PainScreen() {
   const [pains, setPains] = useState<PainEntry[]>(draft.pains);
   const [errors, setErrors] = useState<ValidationErrors>({});
 
-  /** Körperstelle hinzufügen oder entfernen, Reihenfolge wie in der Auswahl */
-  function toggleLocation(location: BodyLocation) {
-    setPains((current) => {
-      if (current.some((pain) => pain.location === location)) {
-        return current.filter((pain) => pain.location !== location);
-      }
-      const order = PAIN_LOCATIONS.map((option) => option.value as BodyLocation);
-      return [...current, { location, level: null }].sort(
-        (a, b) => order.indexOf(a.location) - order.indexOf(b.location),
-      );
-    });
-  }
-
-  function setLevel(location: BodyLocation, level: number) {
-    setPains((current) =>
-      current.map((pain) => (pain.location === location ? { ...pain, level } : pain)),
-    );
-  }
+  const toggleLocation = (location: BodyLocation) => setPains((current) => togglePainLocation(current, location));
+  const setLevel = (location: BodyLocation, level: number) =>
+    setPains((current) => setPainLevel(current, location, level));
 
   function handleNext() {
     const newErrors = validatePain({ hasPain, pains });
@@ -93,7 +72,7 @@ export default function PainScreen() {
           {/* Für jede gewählte Stelle eine eigene Stärke */}
           {pains.map((pain) => (
             <View key={pain.location} style={styles.levelBlock}>
-              <Text style={styles.levelTitle}>{labelFor(pain.location)}: Wie stark?</Text>
+              <Text style={styles.levelTitle}>{painLocationLabel(pain.location)}: Wie stark?</Text>
               <View style={s.chipGrid}>
                 {PAIN_LEVELS.map((value) => (
                   <ChoiceChip
