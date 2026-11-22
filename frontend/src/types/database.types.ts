@@ -181,6 +181,41 @@ export type Database = {
           },
         ]
       }
+      coach_messages: {
+        Row: {
+          coach_message_id: string
+          content: string
+          created_at: string
+          role: Database["public"]["Enums"]["chat_role"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          coach_message_id?: string
+          content: string
+          created_at?: string
+          role: Database["public"]["Enums"]["chat_role"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          coach_message_id?: string
+          content?: string
+          created_at?: string
+          role?: Database["public"]["Enums"]["chat_role"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coach_messages_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       goals: {
         Row: {
           created_at: string
@@ -277,6 +312,129 @@ export type Database = {
           },
         ]
       }
+      plan_phases: {
+        Row: {
+          created_at: string
+          end_date: string
+          focus: string | null
+          name: string
+          plan_phase_id: string
+          position: number
+          start_date: string
+          training_plan_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          end_date: string
+          focus?: string | null
+          name: string
+          plan_phase_id?: string
+          position: number
+          start_date: string
+          training_plan_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          end_date?: string
+          focus?: string | null
+          name?: string
+          plan_phase_id?: string
+          position?: number
+          start_date?: string
+          training_plan_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "plan_phases_plan_fkey"
+            columns: ["training_plan_id", "user_id"]
+            isOneToOne: false
+            referencedRelation: "training_plans"
+            referencedColumns: ["training_plan_id", "user_id"]
+          },
+        ]
+      }
+      plan_sessions: {
+        Row: {
+          activity_id: string | null
+          created_at: string
+          description: string | null
+          plan_phase_id: string | null
+          plan_session_id: string
+          session_date: string
+          session_type: Database["public"]["Enums"]["session_type"]
+          status: Database["public"]["Enums"]["session_status"]
+          target_distance_m: number | null
+          target_duration_s: number | null
+          target_pace_max_s_per_km: number | null
+          target_pace_min_s_per_km: number | null
+          training_plan_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          activity_id?: string | null
+          created_at?: string
+          description?: string | null
+          plan_phase_id?: string | null
+          plan_session_id?: string
+          session_date: string
+          session_type: Database["public"]["Enums"]["session_type"]
+          status?: Database["public"]["Enums"]["session_status"]
+          target_distance_m?: number | null
+          target_duration_s?: number | null
+          target_pace_max_s_per_km?: number | null
+          target_pace_min_s_per_km?: number | null
+          training_plan_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          activity_id?: string | null
+          created_at?: string
+          description?: string | null
+          plan_phase_id?: string | null
+          plan_session_id?: string
+          session_date?: string
+          session_type?: Database["public"]["Enums"]["session_type"]
+          status?: Database["public"]["Enums"]["session_status"]
+          target_distance_m?: number | null
+          target_duration_s?: number | null
+          target_pace_max_s_per_km?: number | null
+          target_pace_min_s_per_km?: number | null
+          training_plan_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "plan_sessions_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: true
+            referencedRelation: "activities"
+            referencedColumns: ["activity_id"]
+          },
+          {
+            foreignKeyName: "plan_sessions_phase_fkey"
+            columns: ["plan_phase_id", "training_plan_id"]
+            isOneToOne: false
+            referencedRelation: "plan_phases"
+            referencedColumns: ["plan_phase_id", "training_plan_id"]
+          },
+          {
+            foreignKeyName: "plan_sessions_plan_fkey"
+            columns: ["training_plan_id", "user_id"]
+            isOneToOne: false
+            referencedRelation: "training_plans"
+            referencedColumns: ["training_plan_id", "user_id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
@@ -339,11 +497,66 @@ export type Database = {
           },
         ]
       }
+      training_plans: {
+        Row: {
+          activated_at: string | null
+          created_at: string
+          goal_id: string
+          source: Database["public"]["Enums"]["plan_source"]
+          status: Database["public"]["Enums"]["plan_status"]
+          superseded_at: string | null
+          training_plan_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          activated_at?: string | null
+          created_at?: string
+          goal_id: string
+          source: Database["public"]["Enums"]["plan_source"]
+          status?: Database["public"]["Enums"]["plan_status"]
+          superseded_at?: string | null
+          training_plan_id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          activated_at?: string | null
+          created_at?: string
+          goal_id?: string
+          source?: Database["public"]["Enums"]["plan_source"]
+          status?: Database["public"]["Enums"]["plan_status"]
+          superseded_at?: string | null
+          training_plan_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "training_plans_goal_id_fkey"
+            columns: ["goal_id"]
+            isOneToOne: false
+            referencedRelation: "goals"
+            referencedColumns: ["goal_id"]
+          },
+          {
+            foreignKeyName: "training_plans_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      activate_training_plan: {
+        Args: { p_training_plan_id: string }
+        Returns: undefined
+      }
       complete_onboarding: {
         Args: {
           p_available_days: number[]
@@ -370,6 +583,13 @@ export type Database = {
         }
         Returns: string
       }
+      set_session_status: {
+        Args: {
+          p_plan_session_id: string
+          p_status: Database["public"]["Enums"]["session_status"]
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       activity_source: "manual" | "strava"
@@ -383,8 +603,13 @@ export type Database = {
         | "hip"
         | "back"
         | "other"
+      chat_role: "user" | "assistant"
       fitness_level: "beginner" | "intermediate" | "advanced"
       goal_feasibility: "realistic" | "ambitious" | "unrealistic"
+      plan_source: "ai" | "manual"
+      plan_status: "draft" | "active" | "superseded" | "discarded"
+      session_status: "planned" | "completed" | "skipped"
+      session_type: "easy" | "long" | "tempo" | "interval" | "rest" | "race"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -527,8 +752,13 @@ export const Constants = {
         "back",
         "other",
       ],
+      chat_role: ["user", "assistant"],
       fitness_level: ["beginner", "intermediate", "advanced"],
       goal_feasibility: ["realistic", "ambitious", "unrealistic"],
+      plan_source: ["ai", "manual"],
+      plan_status: ["draft", "active", "superseded", "discarded"],
+      session_status: ["planned", "completed", "skipped"],
+      session_type: ["easy", "long", "tempo", "interval", "rest", "race"],
     },
   },
 } as const
