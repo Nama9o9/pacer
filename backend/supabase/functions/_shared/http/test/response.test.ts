@@ -39,7 +39,7 @@ Deno.test('errorResponse: JSON im einheitlichen Format mit CORS-Header', async (
 
   assertEquals(response.status, 504);
   assertEquals(response.headers.get('Access-Control-Allow-Origin'), '*');
-  assertEquals(response.headers.get('Content-Type'), 'application/json');
+  assertEquals(response.headers.get('Content-Type'), 'application/json; charset=utf-8');
   assertEquals((await response.json()).error.code, 'AI_TIMEOUT');
 });
 
