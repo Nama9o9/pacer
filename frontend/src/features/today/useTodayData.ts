@@ -87,6 +87,11 @@ export function useTodayData(): TodayDataState & { reload: () => void } {
             displayName: profileResult.data?.display_name ?? null,
           });
         }
+      })
+      // Netzwerkfehler kommen je nach Plattform als Exception statt als error-Objekt.
+      // Ohne catch bliebe der Screen sonst dauerhaft im Ladezustand.
+      .catch(() => {
+        if (isCurrent) setState({ status: 'error' });
       });
 
       return () => {
